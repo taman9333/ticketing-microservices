@@ -34,6 +34,7 @@ router.post(
         id: user.id,
         email: user.email
       },
+      // the ! to tell typescript to neglect that as we checking that env variable is provided in the entry-point file
       process.env.JWT_KEY!
     );
 
