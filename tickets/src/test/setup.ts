@@ -1,5 +1,6 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 import { app } from '../app';
 import request from 'supertest';
 
@@ -9,7 +10,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 declare global {
   namespace NodeJS {
     interface Global {
-      getCookie(): Promise<string[]>;
+      getCookie(): string[];
     }
   }
 }
@@ -46,15 +47,19 @@ afterAll(async () => {
   await mongo.stop();
 });
 
-global.getCookie = async () => {
-  const credentials = { email: 'test@test.com', password: 'password' };
+global.getCookie = () => {
+  const payload = {
+    id: '12wskjksd1',
+    email: 'test@test.com'
+  };
 
-  const response = await request(app)
-    .post('/api/users/signup')
-    .send(credentials)
-    .expect(201);
+  const token = jwt.sign(payload, process.env.JWT_KEY!);
 
-  const cookie = response.get('Set-Cookie');
+  const session = { jwt: token };
 
-  return cookie;
+  const sessionJson = JSON.stringify(session);
+
+  const base64 = Buffer.from(sessionJson).toString('base64');
+
+  return [`express:sess=${base64}`];
 };
