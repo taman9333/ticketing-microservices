@@ -3,13 +3,12 @@ import express, { Request, Response } from 'express';
 import {
   BadRequestError,
   NotFoundError,
-  OrderStatus,
   requireAuth,
   validateRequest
 } from '@ttickets/common';
 import { body } from 'express-validator';
 import { Ticket } from '../models/ticket';
-import { Order } from '../models/order';
+import { Order, OrderStatus } from '../models/order';
 
 const router = express.Router();
 
