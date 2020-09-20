@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { app } from '../../app';
-import { Order } from '../../models/order';
 import { Ticket } from '../../models/ticket';
 
 const buildTicket = async () => {
@@ -22,6 +21,7 @@ it('fetches orders for an particular user', async () => {
   const userOne = global.getCookie();
   const userTwo = global.getCookie();
 
+  // Create one order as User #1
   await request(app)
     .post('/api/orders')
     .set('Cookie', userOne)
