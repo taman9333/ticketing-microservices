@@ -108,7 +108,7 @@ it('publishes an event', async () => {
       price: 20
     });
 
-  const updateRes = await request(app)
+  await request(app)
     .put(`/api/tickets/${res.body.id}`)
     .set('Cookie', cookie)
     .send({
@@ -118,4 +118,28 @@ it('publishes an event', async () => {
     .expect(200);
 
   expect(natsWrapper.client.publish).toHaveBeenCalled();
+});
+
+it('rejects updates if the ticket is reserved', async () => {
+  const cookie = global.getCookie();
+  const res = await request(app)
+    .post(`/api/tickets`)
+    .set('Cookie', cookie)
+    .send({
+      title: 'test',
+      price: 20
+    });
+
+  const ticket = await Ticket.findById(res.body.id);
+  ticket!.set({ orderId: mongoose.Types.ObjectId().toHexString() });
+  await ticket!.save();
+
+  await request(app)
+    .put(`/api/tickets/${res.body.id}`)
+    .set('Cookie', cookie)
+    .send({
+      title: 'new name',
+      price: 10
+    })
+    .expect(400);
 });
