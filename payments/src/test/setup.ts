@@ -10,7 +10,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 600000;
 declare global {
   namespace NodeJS {
     interface Global {
-      getCookie(): string[];
+      getCookie(id?: string): string[];
     }
   }
 }
@@ -51,9 +51,9 @@ afterAll(async () => {
   await mongo.stop();
 });
 
-global.getCookie = () => {
+global.getCookie = (id?: string) => {
   const payload = {
-    id: new mongoose.Types.ObjectId().toHexString(),
+    id: id || new mongoose.Types.ObjectId().toHexString(),
     email: 'test@test.com'
   };
 
